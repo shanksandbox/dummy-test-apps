@@ -1,0 +1,35 @@
+body {
+  font-family: sans-serif;
+  margin: 2rem;
+  background-color: #f0f0f0;
+}
+
+input {
+  padding: 0.5rem;
+  width: 300px;
+}
+
+button {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+/* BUG 14: No hover/focus styling */
+ul {
+  margin-top: 1rem;
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
+  margin: 0.5rem 0;
+  background: white;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+
+  /* BUG 15: Long task text will break layout */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

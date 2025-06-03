@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task Tracker Lite (More Bugs)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Task Tracker Lite</h1>
+
+  <!-- BUG 13: No <label> for accessibility -->
+  <input type="text" id="taskInput" placeholder="Enter a new task" />
+  <button onclick="addTask()">Add Task</button>
+  <button onclick="saveTasks()">Save Tasks</button>
+
+  <ul id="taskList"></ul>
+
+  <script src="script.js"></script>
+</body>
+</html>
