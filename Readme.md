@@ -1,83 +1,169 @@
-// README.md
+# 🐞 Bug Report: Task Tracker Lite
 
-# Task Tracker Lite (Testing Interview Project)
+## Overview
 
-## 📝 Overview
-This is a deliberately buggy task management app meant for testing/QA interviews. It includes both a **web app** and a **CLI tool**, each with embedded issues to evaluate a candidate’s ability to identify, document, and suggest fixes.
-
----
-
-## 📦 Project Structure
-```
-task-tracker-lite/
-├── webapp/             # React-based Web App
-│   ├── App.js
-│   ├── TaskForm.js
-│   ├── TaskList.js
-│   └── index.html
-├── cli/                # Python CLI Tool
-│   └── task_cli.py
-└── README.md           # This file
-```
+This document summarizes all known bugs intentionally embedded in the **Task Tracker Lite** project. It includes both **Web App (React)** and **CLI Tool (Python)** components. Each bug includes a description, reproduction steps, expected behavior, and suggested fixes.
 
 ---
 
-## 🖥 Web App
-Built using **React**. Tasks are stored in browser memory (not persisted).
+## 🖥 Web App Bugs
 
-### 🐛 Known Bugs in Web App
-| Feature | Bug Description |
-|--------|------------------|
-| Add Task | Allows empty task submission |
-| Mark Complete | Marks wrong task due to index mismatch |
-| Delete Task | Deletes incorrect task |
-| UI Refresh | Added task may not show without manual refresh |
-| Responsive Design | Breaks on small screen sizes |
+### 1. Allows Empty Tasks
 
-### 🛠 Setup
+- **File**: `TaskForm.js`  
+- **Type**: Input Validation  
+
+**Steps to Reproduce**:
+1. Click "Add Task" without typing anything.
+2. Observe a blank task is added.
+
+**Expected**: Input should be validated before submission.  
+**Fix**: Check for empty/whitespace-only task before adding.
+
+---
+
+### 2. Wrong Task Marked Complete
+
+- **File**: `App.js` → `toggleComplete`  
+- **Type**: Logic Error  
+
+**Steps to Reproduce**:
+1. Add two tasks.
+2. Click "Done" on the first.
+3. Second task is marked complete.
+
+**Expected**: Correct task should toggle.  
+**Fix**: Use `index` instead of `index + 1`.
+
+---
+
+### 3. Wrong Task Deleted
+
+- **File**: `App.js` → `deleteTask`  
+- **Type**: Index Misuse  
+
+**Steps to Reproduce**:
+1. Add tasks.
+2. Click "Delete" on a task.
+3. An unexpected task is removed.
+
+**Expected**: Correct task should be deleted.  
+**Fix**: Use `splice(index, 1)` properly.
+
+---
+
+### 4. Tasks Not Updating Consistently
+
+- **File**: UI behavior  
+- **Type**: Inconsistent Render  
+
+**Steps to Reproduce**:
+1. Add a task.
+2. Sometimes the task does not appear until another UI action.
+
+**Expected**: New tasks should appear instantly.  
+**Fix**: Likely resolved by fixing index or state update issues.
+
+---
+
+### 5. Non-Responsive UI
+
+- **File**: `index.html` (no styles applied)  
+- **Type**: Layout Bug  
+
+**Steps to Reproduce**:
+1. Open app on a mobile device.
+2. Layout breaks or scrolls awkwardly.
+
+**Expected**: Responsive layout.  
+**Fix**: Add responsive CSS or use a UI framework (e.g., Bootstrap, Tailwind).
+
+---
+
+## 💻 CLI Tool Bugs
+
+### 6. Tasks with >5 Words Not Saved
+
+- **File**: `task_cli.py` → `add_task`  
+- **Type**: Arbitrary Limitation  
+
+**Steps to Reproduce**:
 ```bash
-cd webapp
-npm install
-npm start
+python task_cli.py add "This is a very long task input"
 ```
+
+**Expected**: Task should be accepted or clear error shown.  
+**Fix**: Remove or document the word limit.
 
 ---
 
-## 💻 CLI Tool (Python)
-Lightweight CLI-based task tracker written in Python 3.
+### 7. Deleting Index 0 Crashes
 
-### 🐛 Known Bugs in CLI
-| Command | Bug Description |
-|---------|------------------|
-| add     | Tasks with >5 words are silently not saved |
-| delete  | Deleting task with index 0 crashes the app |
-| complete | No index validation; may throw exception |
-| save     | Says tasks are saved, but does not persist |
+- **File**: `task_cli.py` → `delete_task`  
+- **Type**: Index Error  
 
-### 🛠 Setup
+**Steps to Reproduce**:
+1. Add a task.
+2. Run:
 ```bash
-cd cli
-python task_cli.py add "Sample task"
-python task_cli.py list
+python task_cli.py delete 0
 ```
 
----
-
-## ✅ Interview Task for Candidates
-Candidates should:
-1. Use both the **web app** and **CLI tool**
-2. Report **bugs**, **steps to reproduce**, and **expected behavior**
-3. Suggest possible **fixes** or improvements
-4. (Bonus) Attempt to write a basic test suite
+**Expected**: Should handle gracefully.  
+**Fix**: Validate index bounds before deleting.
 
 ---
 
-## 📎 Notes
-- Webapp uses functional components + hooks.
-- CLI intentionally avoids external dependencies.
-- No authentication, user roles, or real persistence.
+### 8. No Index Check on `complete`
+
+- **File**: `task_cli.py` → `complete_task`  
+- **Type**: Index Error  
+
+**Steps to Reproduce**:
+```bash
+python task_cli.py complete 5
+```
+
+**Expected**: Should not allow invalid index.  
+**Fix**: Check index bounds before completing task.
 
 ---
 
-## 📫 Contact
-This is a mock project. Please direct feedback to the interviewing team.
+### 9. `save` Command Doesn’t Save
+
+- **File**: `task_cli.py` → `save_tasks`  
+- **Type**: UX Misleading  
+
+**Steps to Reproduce**:
+1. Add a task.
+2. Run:
+```bash
+python task_cli.py save
+```
+3. Reopen tool—task is gone.
+
+**Expected**: Should persist data or indicate no actual save.  
+**Fix**: Save to a JSON file or remove misleading message.
+
+---
+
+## 📊 Summary Table
+
+| ID | Location             | Bug                     | Severity |
+|----|----------------------|--------------------------|----------|
+| 1  | Web - `TaskForm.js`  | Empty task allowed       | Medium   |
+| 2  | Web - `App.js`       | Wrong task toggled       | High     |
+| 3  | Web - `App.js`       | Wrong task deleted       | High     |
+| 4  | Web - UI             | Inconsistent UI update   | Medium   |
+| 5  | Web - Layout         | Not responsive           | Low      |
+| 6  | CLI - `add_task`     | >5 word limit            | Medium   |
+| 7  | CLI - `delete_task`  | Crashes on index 0       | High     |
+| 8  | CLI - `complete_task`| No index validation      | Medium   |
+| 9  | CLI - `save_tasks`   | Fake save                | Low      |
+
+---
+
+## ✅ Next Steps
+
+- Let candidates explore and document these bugs.
+- Optionally assign fixes as part of follow-up tasks.
